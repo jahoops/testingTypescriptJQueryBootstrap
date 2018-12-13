@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "target": "es5",
+    "module": "es6",
+    "sourceMap": false,
+    "outDir": "./ts/rollup/"
+  },
+  "include": [
+    "./ts/typelibs/**/*",
+    "./ts/**/*"
+  ],
+  "compileOnSave": true
+}
