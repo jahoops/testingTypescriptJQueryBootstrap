@@ -23,7 +23,7 @@
 export default {
   input: './ts/rollup/jb-flashcards.js',
   output: {
-    name: 'reportengine',
+    name: 'flashcards',
     file: './js/jb-flashcards.js',
     format: 'iife',
     sourcemap: false

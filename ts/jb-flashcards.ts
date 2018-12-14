@@ -1,7 +1,13 @@
-import {
-  Bucket,
-  Card
-} from "./card";
+const enum Bucket {
+  A,
+  B,
+  C
+}
+
+interface Card {
+  Q : string;
+  A : string;
+}
 
 class Flashcards {
   SetName: string;
@@ -12,9 +18,12 @@ class Flashcards {
 
   constructor(name : string, cardData ? : any[]) {
     this.SetName = name;
+    this.Buckets[Bucket.A] = [];
+    this.Buckets[Bucket.B] = [];
+    this.Buckets[Bucket.C] = [];
     if(cardData) {
       for (let r: number = 0; r < cardData.length; r++) {
-        this.SetCards.push(new Card(cardData[r]));
+        this.SetCards.push(cardData[r]);
         this.Buckets[this.CurrentBucket].push(r);
       } 
       this.saveToLS();
@@ -94,3 +103,4 @@ class Flashcards {
     this.saveToLS();
   }
 }
+export default Flashcards;
