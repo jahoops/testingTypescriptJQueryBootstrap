@@ -13,34 +13,34 @@ class Flashcards {
       this.SetCards.push(new Card(cardData[r]));
     }
 
-    function loadFromArray(array):void {
-      ouicards.flashcards = array;
+    function loadFromArray(array: any[]):void {
+      this.SetCards = array;
       resetBuckets();
     }
 
-    function loadFromBrowser(selector, delimiter):Card[] {
-      var flashcards = [],
-        userInput = $(selector).val().split("\n");
+    function loadFromBrowser(selector:string, delimiter:string):Card[] {
+      var flashcardRows: string[] = [];
+      flashcardRows = $(selector).val().split("\n");
 
       // get rid of empty questions
-      userInput = userInput.filter(function (card) {
-        return card !== "";
+      var rows:string[] = flashcardRows.filter(function (row: string): string {
+        if(row !== "") { return row; }
       });
 
-      if (userInput.length === 0) {
+      if (rows.length === 0) {
         console.log("There are no flashcards to upload.");
         return;
       }
 
-      userInput.forEach(function (card) {
-        var parsedCard = card.split(delimiter);
-        flashcards.push({
-          question: parsedCard[0],
-          answer: parsedCard[1]
+      rows.forEach(function (row:string):void {
+        var parsedCard:string[] = row.split(delimiter);
+        this.SetCards = [];
+        this.SetCards.push({
+          Question: parsedCard[0],
+          Answer: parsedCard[1]
         });
       });
 
-      ouicards.flashcards = flashcards;
       resetBuckets();
       return getFromLS();
     }
