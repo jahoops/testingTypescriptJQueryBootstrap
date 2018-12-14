@@ -2,14 +2,15 @@
 //     show: boolean;
 //     formats: IFormat[] = [];
 // }
-// enum Sort {
-//     none,
-//     asc,
-//     desc
-// }
+export enum Bucket {
+    A,
+    B,
+    C
+}
 export class Card {
-    Question : string;
-    Answer : string;
-    Bucket: number;
-    Index: number;
+    Q : string;
+    A : string;
+    constructor(json_in: any) {
+        $.extend(this, json_in);
+    }
 }

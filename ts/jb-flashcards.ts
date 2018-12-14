@@ -1,207 +1,96 @@
 import {
-  CardInfo,
+  Bucket,
   Card
 } from "./card";
 
 class Flashcards {
-  SetID: number;
   SetName: string;
-  SetVersion: string;
   SetCards: Card[] = [];
-  constructor(id ? : number, name ? : string, version ? : string, cardData: any[]) {
-    for (let r: number = 0; r < cardData.length; r++) {
-      this.SetCards.push(new Card(cardData[r]));
+  CurrentCardIndex: number;
+  Buckets: number[][] = [];
+  CurrentBucket: Bucket = Bucket.A;
+
+  constructor(name : string, cardData ? : any[]) {
+    this.SetName = name;
+    if(cardData) {
+      for (let r: number = 0; r < cardData.length; r++) {
+        this.SetCards.push(new Card(cardData[r]));
+        this.Buckets[this.CurrentBucket].push(r);
+      } 
+      this.saveToLS();
+    } else {
+      this.getFromLS();
     }
+  }
 
-    function loadFromArray(array: any[]):void {
-      this.SetCards = array;
-      resetBuckets();
+  next():Card {
+    var limitC: number = 16;
+    var limitB: number = 33;
+    var r:number = Math.floor(Math.random() * 100);
+    if (r<limitC && this.Buckets[Bucket.C].length > 0) {
+      this.CurrentBucket = Bucket.C;
+    } else if (r<limitB && this.Buckets[Bucket.B].length > 0) {
+      this.CurrentBucket = Bucket.B;
+    } else if (this.Buckets[Bucket.A].length > 0) {
+      this.CurrentBucket = Bucket.A;
+    } else if (this.Buckets[Bucket.B].length > 0) {
+      this.CurrentBucket = Bucket.B;
+    } else if (this.Buckets[Bucket.C].length > 0) {
+      this.CurrentBucket = Bucket.C;
+    } else {
+      alert("ERROR: No cards found.");
+      return;
     }
+    this.CurrentCardIndex = Math.floor(Math.random() * this.Buckets[this.CurrentBucket].length);
+    return this.SetCards[this.Buckets[this.CurrentBucket][this.CurrentCardIndex]];
+  }
 
-    function loadFromBrowser(selector:string, delimiter:string):Card[] {
-      var flashcardRows: string[] = [];
-      flashcardRows = $(selector).val().split("\n");
+  correct():void {
+    if (this.CurrentBucket === Bucket.A) {
+      this.moveQuestion(Bucket.B);
+    } else if (this.CurrentBucket === Bucket.B) {
+      this.moveQuestion(Bucket.C);
+    } else if (this.CurrentBucket === Bucket.C) {
+    } else
+    this.moveQuestion(Bucket.B);
+    this.saveToLS();
+  }
 
-      // get rid of empty questions
-      var rows:string[] = flashcardRows.filter(function (row: string): string {
-        if(row !== "") { return row; }
-      });
+  wrong():void {
+    this.moveQuestion(Bucket.A);
+    this.saveToLS();
+  }
 
-      if (rows.length === 0) {
-        console.log("There are no flashcards to upload.");
-        return;
-      }
-
-      rows.forEach(function (row:string):void {
-        var parsedCard:string[] = row.split(delimiter);
-        this.SetCards = [];
-        this.SetCards.push({
-          Question: parsedCard[0],
-          Answer: parsedCard[1]
-        });
-      });
-
-      resetBuckets();
-      return getFromLS();
+  private moveQuestion(toBucket:Bucket):void {
+    if(this.CurrentBucket !== toBucket) {
+      this.Buckets[toBucket].push(this.Buckets[this.CurrentBucket][this.CurrentCardIndex]);
+      this.Buckets[this.CurrentBucket] = this.Buckets[this.CurrentBucket].splice(this.CurrentCardIndex,1);
     }
+  }
 
-    function next():void {
-      var newQuestion,
-        bigInterval = Math.ceil(ouicards.flashcards.length / 3) + 1,
-        smallInterval = Math.ceil(ouicards.flashcards.length / 6) + 1;
+  saveToLS():void {
+    localStorage['jbf-SetCards-' + this.SetName] = JSON.stringify(this.SetCards);
+    localStorage['jbf-BucketA-' + this.SetName] = JSON.stringify(this.Buckets[Bucket.A]);
+    localStorage['jbf-BucketB-' + this.SetName] = JSON.stringify(this.Buckets[Bucket.B]);
+    localStorage['jbf-BucketC-' + this.SetName] = JSON.stringify(this.Buckets[Bucket.C]);
+  }
 
-      // Show an answer from bucket C once every bigInterval 
-      // So long as Bucket C it"s not empty
-      if (ouicards.counter % bigInterval === 0 && ouicards.bucketC.length !== 0) {
-        newQuestion = getQuestion(ouicards.bucketC);
-        ouicards.currentBucket = ouicards.bucketC;
+  getFromLS():void {
+    this.SetCards = JSON.parse(localStorage['jbf-SetCards-' + this.SetName] || "[]");
+    this.Buckets[Bucket.A] = JSON.parse(localStorage['jbf-BucketA-' + this.SetName] || "[]");
+    this.Buckets[Bucket.B] = JSON.parse(localStorage['jbf-BucketB-' + this.SetName] || "[]");
+    this.Buckets[Bucket.C] = JSON.parse(localStorage['jbf-BucketC-' + this.SetName] || "[]");
+    this.CurrentBucket = this.Buckets[Bucket.A].length ? Bucket.A : this.Buckets[Bucket.B].length ? Bucket.B : Bucket.C;
+  }
 
-        // Show an answer from bucket B once every smallInterval
-        // So long as Bucket B it"s not empty
-      } else if (ouicards.counter % smallInterval === 0 && ouicards.bucketB.length !== 0) {
-        newQuestion = getQuestion(ouicards.bucketB);
-        ouicards.currentBucket = ouicards.bucketB;
-
-        // Show an answer from Bucket A, so long as it"s not empty
-      } else if (ouicards.bucketA.length !== 0) {
-        newQuestion = getQuestion(ouicards.bucketA);
-        ouicards.currentBucket = ouicards.bucketA;
-
-        // Show an answer from Bucket B, so long as it"s not empty
-      } else if (ouicards.bucketB.length !== 0) {
-        newQuestion = getQuestion(ouicards.bucketB);
-        ouicards.currentBucket = ouicards.bucketB;
-
-        // Show a question from Bucket C, so long as it"s not empty
-      } else if (ouicards.bucketC.length !== 0) {
-        newQuestion = getQuestion(ouicards.bucketC);
-        ouicards.currentBucket = ouicards.bucketC;
-      } else {
-        console.log("There was a serious problem with ouicards. You should never see ");
-      }
-
-      // Reset ouicards.counter if it"s greater than flashcard count, otherwise ++ it
-      ouicards.counter >= ouicards.flashcards.length ? ouicards.counter = 1 : ouicards.counter++;
-      return newQuestion;
+  resetBuckets():void {
+    this.Buckets[Bucket.A] = [];
+    for (let c: number = 0; c < this.SetCards.length; c++) {
+      this.Buckets[Bucket.A].push(c);
     }
-
-    function correct():void {
-      if (ouicards.currentBucket === ouicards.bucketA) {
-        moveQuestion(ouicards.bucketA, ouicards.bucketB);
-      } else if (ouicards.currentBucket === ouicards.bucketB) {
-        moveQuestion(ouicards.bucketB, ouicards.bucketC);
-      } else if (ouicards.currentBucket === ouicards.bucketC) {
-        moveQuestion(ouicards.bucketC, ouicards.bucketC);
-      } else
-        console.log("Hmm, you should not be here.");
-      saveToLS();
-    }
-
-    function wrong():void {
-      moveQuestion(ouicards.currentBucket, ouicards.bucketA);
-      saveToLS();
-    }
-
-    function moveQuestion(fromBucket, toBucket):void {
-      toBucket.push(fromBucket.shift());
-    }
-
-    function getQuestion(bucket):string {
-      // Prevent from looping thru an empty bucket
-      if (!bucket || bucket.length === 0) {
-        console.log("You can"t load an empty set of questions.");
-        return;
-      }
-
-      return buildQuestionHTML(bucket[0]);
-    }
-
-    function buildQuestionHTML(rawQuestion):object {
-      var questionEl, answerEl;
-
-      questionEl = document.createElement("p");
-      questionEl.innerHTML = rawQuestion.question;
-
-      answerEl = document.createElement("p");
-      answerEl.innerHTML = rawQuestion.answer.replace(/\n/g, "<br>");
-
-      return {
-        question: questionEl,
-        answer: answerEl
-      };
-    }
-
-    function saveToLS():void {
-      localStorage.flashcards = JSON.stringify(ouicards.flashcards);
-      localStorage.bucketA = JSON.stringify(ouicards.bucketA);
-      localStorage.bucketB = JSON.stringify(ouicards.bucketB);
-      localStorage.bucketC = JSON.stringify(ouicards.bucketC);
-    }
-
-    function getFromLS():object {
-      ouicards.flashcards = JSON.parse(localStorage.flashcards || "[]");
-      ouicards.bucketA = JSON.parse(localStorage.bucketA || "[]");
-      ouicards.bucketB = JSON.parse(localStorage.bucketB || "[]");
-      ouicards.bucketC = JSON.parse(localStorage.bucketC || "[]");
-      ouicards.currentBucket = ouicards.bucketA.length ? ouicards.bucketA :
-        ouicards.bucketB.length ? ouicards.bucketB :
-        ouicards.bucketC.length ? ouicards.bucketC : [];
-
-      ouicards.counter = 1;
-      return {
-        flashcards: ouicards.flashcards,
-        bucketA: ouicards.bucketA,
-        bucketB: ouicards.bucketB,
-        bucketC: ouicards.bucketC
-      };
-    }
-
-    function resetBuckets():void {
-      ouicards.bucketA = ouicards.flashcards.slice(0);
-      ouicards.currentBucket = ouicards.bucketA;
-      ouicards.bucketB = [];
-      ouicards.bucketC = [];
-      ouicards.counter = 1;
-      saveToLS();
-    }
-
-    // jQuery magic
-    var showNext = function ():void {
-      var result:function = next();
-      $("#current-question").first().html(result["question"]);
-      $("#current-answer").first().hide().html(result["answer"]);
-    };
-
-    $.fn.ouicards = function ():void {
-      var result:object[] = [];
-      this.find("ul").hide().children().each(function () {
-        result.push({
-          question: $(this).find(".question").text(),
-          answer: $(this).find(".answer").text()
-        });
-      });
-
-      loadFromArray(result);
-
-      $("a#correct").click(function (event:Event ):void {
-        event.preventDefault();
-        correct();
-        showNext();
-      });
-
-      $("a#wrong").click(function (event:Event):void {
-        event.preventDefault();
-        wrong();
-        showNext();
-      });
-
-      $("a#show-answer").click(function (event:Event):void  {
-        event.preventDefault();
-        $("#current-answer").first().show();
-      });
-
-      showNext();
-    };
-
+    this.CurrentBucket = Bucket.A;
+    this.Buckets[Bucket.B] = [];
+    this.Buckets[Bucket.C] = [];
+    this.saveToLS();
   }
 }
