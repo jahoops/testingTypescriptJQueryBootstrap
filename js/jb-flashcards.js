@@ -66,7 +66,7 @@ var flashcards = (function () {
         Flashcards.prototype.moveQuestion = function (toBucket) {
             if (this.CurrentBucket !== toBucket) {
                 this.Buckets[toBucket].push(this.Buckets[this.CurrentBucket][this.CurrentCardIndex]);
-                this.Buckets[this.CurrentBucket] = this.Buckets[this.CurrentBucket].splice(this.CurrentCardIndex, 1);
+                this.Buckets[this.CurrentBucket].splice(this.CurrentCardIndex, 1);
             }
         };
         Flashcards.prototype.saveToLS = function () {
