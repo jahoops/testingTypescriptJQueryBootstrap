@@ -35,6 +35,7 @@ class Flashcards {
   next():Card {
     var limitC: number = 16;
     var limitB: number = 33;
+    var last = { index:this.CurrentCardIndex,bucket:this.CurrentBucket };
     var r:number = Math.floor(Math.random() * 100);
     if (r<limitC && this.Buckets[Bucket.C].length > 0) {
       this.CurrentBucket = Bucket.C;
@@ -50,7 +51,11 @@ class Flashcards {
       alert("ERROR: No cards found.");
       return;
     }
-    this.CurrentCardIndex = Math.floor(Math.random() * this.Buckets[this.CurrentBucket].length);
+    var count = 0;
+    do{
+      this.CurrentCardIndex = Math.floor(Math.random() * this.Buckets[this.CurrentBucket].length);
+      count++;
+    } while(last.bucket==this.CurrentBucket && last.index==this.CurrentCardIndex && count<3);
     return this.SetCards[this.Buckets[this.CurrentBucket][this.CurrentCardIndex]];
   }
 

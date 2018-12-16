@@ -21,6 +21,7 @@ var Flashcards = /** @class */ (function () {
     Flashcards.prototype.next = function () {
         var limitC = 16;
         var limitB = 33;
+        var last = { index: this.CurrentCardIndex, bucket: this.CurrentBucket };
         var r = Math.floor(Math.random() * 100);
         if (r < limitC && this.Buckets[2 /* C */].length > 0) {
             this.CurrentBucket = 2 /* C */;
@@ -41,7 +42,11 @@ var Flashcards = /** @class */ (function () {
             alert("ERROR: No cards found.");
             return;
         }
-        this.CurrentCardIndex = Math.floor(Math.random() * this.Buckets[this.CurrentBucket].length);
+        var count = 0;
+        do {
+            this.CurrentCardIndex = Math.floor(Math.random() * this.Buckets[this.CurrentBucket].length);
+            count++;
+        } while (last.bucket == this.CurrentBucket && last.index == this.CurrentCardIndex && count < 3);
         return this.SetCards[this.Buckets[this.CurrentBucket][this.CurrentCardIndex]];
     };
     Flashcards.prototype.correct = function () {
