@@ -18,7 +18,20 @@
     <div class="container-flex h-100">
       <div class="row w-100 h-100">
           <div class="col-1 bg-light"></div>
-          <div class="col-4 bg-primary"></div>
+          <div class="col-4 bg-primary">
+            <script>
+              (function() {
+                var cx = '001036845085911639930:wohinq0rmgu';
+                var gcse = document.createElement('script');
+                gcse.type = 'text/javascript';
+                gcse.async = true;
+                gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(gcse, s);
+              })();
+            </script>
+            <gcse:search></gcse:search>
+          </div>
           <div class="col-6 bg-success" id="flashCardDiv">
               <div class="card w-100 h-100">
                   <div class="card-header text-center bg-dark">
@@ -60,8 +73,6 @@
         answer.on('click', function(){
           if(answer.val() == hideAnswerText) {
             answer.val(answer.attr('answer'));
-          } else {
-            answer.val(hideAnswerText);
           }
         });
         $('#flashCardDiv .correct').on('click', function(){
