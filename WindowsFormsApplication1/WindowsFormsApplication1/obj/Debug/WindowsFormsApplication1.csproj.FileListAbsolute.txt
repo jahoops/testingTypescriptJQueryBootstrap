@@ -22,3 +22,6 @@ C:\Software\chrome-ext\WindowsFormsApplication1\WindowsFormsApplication1\obj\Deb
 C:\Software\chrome-ext\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Form1.resources
 C:\Software\chrome-ext\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Properties.Resources.resources
 C:\Software\chrome-ext\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.csproj.GenerateResource.Cache
+C:\Software\testingTypescriptJQueryBootstrap\WindowsFormsApplication1\WindowsFormsApplication1\bin\Debug\WindowsFormsApplication1.exe.config
+C:\Software\testingTypescriptJQueryBootstrap\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.exe
+C:\Software\testingTypescriptJQueryBootstrap\WindowsFormsApplication1\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.pdb
