@@ -1,5 +1,8 @@
-var inputfile = './data_raw/questions.txt';
-var outputfile = './data/questions.js';
+//command line > node fileutil.js questions 
+//input must be in ./data_raw/
+//output goes to ./data/
+var inputfile = './data_raw/' + process.argv[2] + '.txt';
+var outputfile = './public/data/' + process.argv[2] + '.js';
 
 var jsonArray = [];
 
@@ -10,7 +13,6 @@ outstream = new (require('stream'))(),
 rl = readline.createInterface(instream, outstream);
 
 rl.on('line', function (line) {   
-    console.log('-->', line,jsonArray.length); 
     if(line.length===0) return;
     var qpos = line.indexOf(')');
     var isnum = line.slice(0,qpos);
@@ -25,13 +27,11 @@ rl.on('close', function () {
     var json = [];
     var jsonObj = {};
 
-    console.log('-->', jsonArray.length);
     for(var i = 0; i < jsonArray.length; i++){
         var row = jsonArray[i];
         console.log(row, row.slice(0,2));
         switch(row.slice(0,2)){
             case 'Q:':
-            console.log('q');
             if(jsonObj.Q) {
                 json.push({Q:jsonObj.Q,A:jsonObj.A});
             }
@@ -39,17 +39,13 @@ rl.on('close', function () {
             jsonObj.A = '';
             break;
             case 'A:':
-            console.log(' a');
-            jsonObj.A += row.slice(2).trim() + '/n';
+            jsonObj.A += row.slice(2).trim() + '<br>';
             break;
         }
     }    
     if(jsonObj!=='') {
         json.push({Q:jsonObj.Q,A:jsonObj.A});
     }
-
-    console.log(json.length);
-    console.log(json);
 
     var fs = require('fs');
     fs.writeFile(outputfile, "var jsdata =" + JSON.stringify(json) + ";", function(err) {

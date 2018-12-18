@@ -28,9 +28,11 @@
                 <div class="card-body">
                   <div class="form-group">
                     <label for="comment">Question:</label>
-                    <textarea class="form-control" rows="3" id="question"></textarea>
+                    <div class="form-control" id="question"></div>
+                    <textarea class="form-control d-none" id="edit_question"></textarea>
                     <label for="comment">Answer:</label>
-                    <textarea class="form-control" rows="12" id="answer" style="cursor:pointer;"></textarea>
+                    <div class="border border-teal-dark rounded p-2" rows="12" id="answer" style="cursor:pointer;"></div>
+                    <textarea class="form-control d-none" rows="12" id="edit_answer" style="cursor:pointer;"></textarea>
                   </div>
                 </div>    
                 <div class="card-footer text-center">
@@ -55,29 +57,27 @@
       var answer = $('#flashCardDiv #answer');
       $(function(){
         heading.html(cards.SetName);
-        question.val(card.Q);
-        setTimeout(function(){
-           $('#gsc-i-id1').val(card.Q);
-        },3000);
+        question.html(card.Q);
+
         answer.attr('answer',card.A).html(hideAnswerText);
         answer.on('click', function(){
-          if(answer.val() == hideAnswerText) {
-            answer.val(answer.attr('answer'));
+          if(answer.html() == hideAnswerText) {
+            answer.html(answer.attr('answer'));
           }
         });
         $('#flashCardDiv .correct').on('click', function(){
           cards.correct();
           card = cards.next();
           answer.attr('answer',card.A);
-          answer.val(hideAnswerText);
-          question.val(card.Q);
+          answer.html(hideAnswerText);
+          question.html(card.Q);
         });
         $('#flashCardDiv .incorrect').on('click', function(){
           cards.wrong();
           card = cards.next();
           answer.attr('answer',card.A);
-          answer.val(hideAnswerText);
-          question.val(card.Q);
+          answer.html(hideAnswerText);
+          question.html(card.Q);
         });
       })
 
