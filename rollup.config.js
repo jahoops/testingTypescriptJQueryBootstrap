@@ -21,10 +21,10 @@
 // };
 
 export default {
-  input: './ts/rollup/jb-flashcards.js',
+  input: 'ts/rollup/jb-flashcards.js',
   output: {
     name: 'flashcards',
-    file: './js/jb-flashcards.js',
+    file: 'public/js/jb-flashcards.js',
     format: 'iife',
     sourcemap: false
   }
