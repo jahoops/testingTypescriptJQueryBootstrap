@@ -1,23 +1,23 @@
 //command line > node question_model.js questions 
 //input must be in ./public/data/
-//output goes to ./data/
+//output goes to ./public/data/
 //*** ALL data sets must have unique ID key ***
 var model_name = process.argv[2];
-var inputjson = './public/data/' + model_name + '.json';
-var m = require(inputjson);
-var outputfile = './data/' + model_name + '.model.js';
+var inputfile = './public/data/' + model_name + '.json';
+var m = require(inputfile);
+var outputfile = './public/data/' + model_name + '.model.js';
 var nonIdFields = '';
 var keys = [];
 var setkeys = [];
-for(const key in inputjson[0]) {
+for(const key in m[0]) {
     if(key!=='id') {
         keys.push(key);
         setkeys.push(key + ':' + key);
     }
 }
 model = `
-const filename = '.' + ${inputjson};
-const helper = require('.' + ${inputjson});
+const filename = '.${inputfile}';
+const helper = require('.${inputfile}');
 let ${model_name} = require('../data/${model_name}.json');
 
 function getItems() {
@@ -55,7 +55,7 @@ function updateItem(id,${keys.join()}) {
         helper.mustBeInArray(${model_name}, id)
         .then(item => {
             const index = ${model_name}.findIndex(p => p.id == item.id);
-            ${model_name}[index] = { id:item.id,id,${setkeys.join()} };
+            ${model_name}[index] = { id:item.id,${setkeys.join()} };
             helper.writeJSONFile(filename, ${model_name});
             resolve(${model_name}[index]);
         })
