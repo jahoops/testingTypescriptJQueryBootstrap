@@ -2,7 +2,7 @@
 //input must be in ./data_raw/
 //output goes to ./data/
 var inputfile = './data_raw/' + process.argv[2] + '.txt';
-var outputfile = './public/data/' + process.argv[2] + '.js';
+var outputfile = './public/data/' + process.argv[2] + '.json';
 
 var jsonArray = [];
 
@@ -17,9 +17,9 @@ rl.on('line', function (line) {
     var qpos = line.indexOf(')');
     var isnum = line.slice(0,qpos);
     if(Number.isInteger(Number(isnum))) {
-        jsonArray.push('Q:' + line.slice(qpos+1));
+        jsonArray.push('q:' + line.slice(qpos+1));
     } else {
-        jsonArray.push('A:' + line.slice(qpos+1));
+        jsonArray.push('a:' + line.slice(qpos+1));
     }
 });
 
@@ -31,24 +31,24 @@ rl.on('close', function () {
         var row = jsonArray[i];
         console.log(row, row.slice(0,2));
         switch(row.slice(0,2)){
-            case 'Q:':
-            if(jsonObj.Q) {
-                json.push({Q:jsonObj.Q,A:jsonObj.A});
+            case 'q:':
+            if(jsonObj.q) {
+                json.push({id:json.length,q:jsonObj.q,a:jsonObj.a});
             }
-            jsonObj.Q = row.slice(2).trim();
-            jsonObj.A = '';
+            jsonObj.q = row.slice(2).trim();
+            jsonObj.a = '';
             break;
-            case 'A:':
-            jsonObj.A += row.slice(2).trim() + '<br>';
+            case 'a:':
+            jsonObj.a += row.slice(2).trim() + '<br>';
             break;
         }
     }    
     if(jsonObj!=='') {
-        json.push({Q:jsonObj.Q,A:jsonObj.A});
+        json.push({id:json.length,q:jsonObj.q,a:jsonObj.a});
     }
 
     var fs = require('fs');
-    fs.writeFile(outputfile, "var jsdata =" + JSON.stringify(json) + ";", function(err) {
+    fs.writeFile(outputfile, JSON.stringify(json), function(err) {
         if(err) {
             return console.log(err);
         }
